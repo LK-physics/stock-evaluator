@@ -1,0 +1,17 @@
+{
+  "name": "stock-evaluator",
+  "version": "1.0.0",
+  "description": "Stock evaluation web app powered by Anthropic Claude with web search",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.19.0"
+  }
+}

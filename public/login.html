@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Stock Evaluator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Stock Evaluator</h1>
+    <p class="subtitle">Top-analyst consensus &amp; entry price calculator</p>
+  </header>
+
+  <main>
+    <div class="login-container">
+      <h2 class="login-title">Login Required</h2>
+      <form id="login-form">
+        <input
+          type="password"
+          id="password-input"
+          placeholder="Enter password"
+          autocomplete="current-password"
+          required
+        >
+        <button type="submit" id="login-btn">Login</button>
+      </form>
+      <p id="login-error" class="login-error hidden"></p>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      Powered by Anthropic Claude with web search. This is not financial advice.
+    </p>
+  </footer>
+
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const password = document.getElementById("password-input").value;
+      const errorEl = document.getElementById("login-error");
+      errorEl.classList.add("hidden");
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+
+        if (res.ok) {
+          window.location.href = "/";
+        } else {
+          const data = await res.json();
+          errorEl.textContent = data.error || "Login failed";
+          errorEl.classList.remove("hidden");
+        }
+      } catch {
+        errorEl.textContent = "Connection error. Please try again.";
+        errorEl.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

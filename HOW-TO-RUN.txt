@@ -1,0 +1,22 @@
+Stock Evaluator - How to Run
+=============================
+
+1. Open a terminal in this folder:
+   C:\Users\kleinl\OneDrive - Bar Ilan University\Documents\AI finance\stock-evaluator\
+
+2. Run:
+   npm start
+
+3. Open in your browser:
+   http://localhost:3000
+
+4. Enter your Anthropic API key in the "API Key Settings" section on the page
+   (or set it in the .env file: ANTHROPIC_API_KEY=sk-ant-...)
+
+5. Type a stock ticker and click Evaluate.
+
+Notes
+-----
+- The server stops when you shut down your computer. Repeat steps 1-3 to restart it.
+- Node.js and dependencies are already installed. No reinstall needed.
+- To get an API key: https://console.anthropic.com (requires account + payment method)

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Evaluator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Stock Evaluator</h1>
+    <p class="subtitle">Top-analyst consensus &amp; entry price calculator</p>
+  </header>
+
+  <main>
+    <form id="evaluate-form">
+      <div class="input-row">
+        <input
+          type="text"
+          id="ticker-input"
+          placeholder="TICKER (e.g. MRVL)"
+          maxlength="5"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button type="submit" id="evaluate-btn">Evaluate</button>
+      </div>
+    </form>
+
+    <details id="api-key-section">
+      <summary>API Key Settings</summary>
+      <div class="api-key-content">
+        <p class="api-key-hint">
+          The server can use its own key. Optionally provide yours here to override.
+        </p>
+        <input
+          type="password"
+          id="api-key-input"
+          placeholder="sk-ant-..."
+          autocomplete="off"
+        >
+        <label class="checkbox-label">
+          <input type="checkbox" id="save-key-checkbox">
+          Save key in browser (localStorage)
+        </label>
+      </div>
+    </details>
+
+    <div id="status-bar" class="hidden">
+      <div class="spinner"></div>
+      <span id="status-text"></span>
+    </div>
+
+    <div id="report-area" class="hidden">
+      <div id="report-actions">
+        <button id="copy-btn" class="hidden" title="Copy raw markdown">Copy Markdown</button>
+      </div>
+      <div id="report-content"></div>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      Powered by Anthropic Claude with web search. This is not financial advice.
+      All analysis is based on publicly available data and top-rated analyst opinions.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
