@@ -72,11 +72,20 @@ Search the web to find the stock's current data:
 - Sector and industry
 - Next earnings date (critical for red-flag check)
 - Recent significant news (last 2 weeks)
+- P/E Ratio (TTM) and Forward P/E
+- EPS (TTM) and Forward EPS estimate
+- Revenue (TTM) and YoY revenue growth %
+- Net profit margin
+- Free cash flow (TTM)
+- Dividend yield (if applicable)
+- Debt-to-Equity ratio
+- Beta
 
 Search queries:
 - \`${ticker} stock price today\`
 - \`${ticker} stock 52 week high low\`
 - \`${ticker} next earnings date 2026\`
+- \`${ticker} stock P/E ratio EPS revenue dividend yield 2026\`
 
 ## Step 2: Gather Top-Analyst Ratings
 
@@ -172,12 +181,19 @@ Evaluate the stock using this framework:
 - **Fair Value**: Near the median top-analyst target
 - **Overvalued**: Above the highest top-analyst target
 
+### Valuation Context
+- **Undervalued**: Forward P/E significantly below sector average OR P/E < 15 for a growth stock
+- **Fairly valued**: Forward P/E in line with sector peers
+- **Expensive**: Forward P/E >40 or significantly above sector average
+- **Speculative**: Negative earnings (no P/E) or P/E > 100
+
 ### Red Flags (any of these warrants caution)
 - Earnings report within 2 weeks (binary event risk)
 - Recent downgrades from top analysts (last 30 days)
 - Wide target spread (>50% of median) indicating high disagreement
 - Fewer than 5 top-rated analysts covering the stock
 - Stock trading above highest analyst target
+- Extreme valuation (P/E > 100 or negative earnings)
 
 ## Step 7: Output Structured Report
 
@@ -188,6 +204,24 @@ Present the final report in this exact format:
 
 **Date**: [today's date]
 **Current Price**: $XX.XX (pre-market: $XX.XX if available)
+
+---
+
+### Key Fundamentals
+
+| Metric | Value |
+|--------|-------|
+| P/E (TTM) | XX.X |
+| Forward P/E | XX.X |
+| EPS (TTM) | $X.XX |
+| Forward EPS (Est.) | $X.XX |
+| Revenue (TTM) | $XX.XB |
+| Revenue Growth (YoY) | XX.X% |
+| Net Profit Margin | XX.X% |
+| Free Cash Flow (TTM) | $XX.XB |
+| Dividend Yield | X.XX% |
+| Debt-to-Equity | X.XX |
+| Beta | X.XX |
 
 ---
 
@@ -241,6 +275,7 @@ Present the final report in this exact format:
 - [ ] Wide target spread (>50%): [Yes/No - actual %]
 - [ ] Low analyst coverage (<5): [Yes/No - count]
 - [ ] Price above highest target: [Yes/No]
+- [ ] Extreme valuation (P/E > 100 or negative earnings): [Yes/No - actual P/E]
 
 ---
 
@@ -260,7 +295,8 @@ Present the final report in this exact format:
 - This is not financial advice; it is a structured summary of analyst consensus
 - Entry price calculations assume normal distribution of returns (actual distributions have fat tails)
 - Always note the earnings date as a key risk event
-- If data for any section is unavailable, state that clearly rather than guessing`;
+- If data for any section is unavailable, state that clearly rather than guessing
+- Fundamental metrics use trailing twelve months (TTM) unless noted; forward estimates are analyst consensus`;
 }
 
 app.post("/api/evaluate", async (req, res) => {
