@@ -20,7 +20,11 @@ app.use(
     secret: process.env.SESSION_SECRET || "stock-evaluator-session-secret",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 },
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
   })
 );
 
@@ -40,6 +44,7 @@ app.use((req, res, next) => {
   if (req.session.authenticated || publicPaths.includes(req.path)) {
     return next();
   }
+  console.log(`Auth blocked: ${req.method} ${req.path} — redirecting to login`);
   res.redirect("/login.html");
 });
 
@@ -68,6 +73,7 @@ function loadSystemPrompt() {
 const SYSTEM_PROMPT = loadSystemPrompt();
 
 app.post("/api/evaluate", async (req, res) => {
+  console.log(`Evaluate request: ticker=${req.body?.ticker}, hasApiKey=${!!req.body?.apiKey}, envKeySet=${!!process.env.ANTHROPIC_API_KEY}`);
   const { ticker, apiKey } = req.body;
 
   // Validate ticker
