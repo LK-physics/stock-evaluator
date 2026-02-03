@@ -1,41 +1,34 @@
 const form = document.getElementById("evaluate-form");
 const tickerInput = document.getElementById("ticker-input");
 const evaluateBtn = document.getElementById("evaluate-btn");
-const apiKeyInput = document.getElementById("api-key-input");
-const saveKeyCheckbox = document.getElementById("save-key-checkbox");
 const statusBar = document.getElementById("status-bar");
 const statusText = document.getElementById("status-text");
 const reportArea = document.getElementById("report-area");
 const reportContent = document.getElementById("report-content");
 const copyBtn = document.getElementById("copy-btn");
+const errorBanner = document.getElementById("error-banner");
 
 let rawMarkdown = "";
 
-// Load saved API key
-const savedKey = localStorage.getItem("stock-eval-api-key");
-if (savedKey) {
-  apiKeyInput.value = savedKey;
-  saveKeyCheckbox.checked = true;
+// Logout
+document.getElementById("logout-btn").addEventListener("click", async () => {
+  await fetch("/api/logout", { method: "POST" });
+  window.location.href = "/login.html";
+});
+
+function showError(msg) {
+  errorBanner.textContent = msg;
+  errorBanner.classList.remove("hidden");
+}
+
+function hideError() {
+  errorBanner.classList.add("hidden");
+  errorBanner.textContent = "";
 }
 
 // Auto-uppercase ticker input
 tickerInput.addEventListener("input", () => {
   tickerInput.value = tickerInput.value.toUpperCase().replace(/[^A-Z]/g, "");
-});
-
-// Save/clear API key based on checkbox
-saveKeyCheckbox.addEventListener("change", () => {
-  if (saveKeyCheckbox.checked && apiKeyInput.value.trim()) {
-    localStorage.setItem("stock-eval-api-key", apiKeyInput.value.trim());
-  } else {
-    localStorage.removeItem("stock-eval-api-key");
-  }
-});
-
-apiKeyInput.addEventListener("input", () => {
-  if (saveKeyCheckbox.checked && apiKeyInput.value.trim()) {
-    localStorage.setItem("stock-eval-api-key", apiKeyInput.value.trim());
-  }
 });
 
 // Copy markdown to clipboard
@@ -46,7 +39,6 @@ copyBtn.addEventListener("click", async () => {
     copyBtn.textContent = "Copied!";
     setTimeout(() => (copyBtn.textContent = original), 1500);
   } catch {
-    // Fallback
     const ta = document.createElement("textarea");
     ta.value = rawMarkdown;
     document.body.appendChild(ta);
@@ -62,9 +54,11 @@ copyBtn.addEventListener("click", async () => {
 // Form submit
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  hideError();
 
   const ticker = tickerInput.value.trim();
   if (!ticker || !/^[A-Z]{1,5}$/.test(ticker)) {
+    showError("Please enter a valid ticker (1-5 letters, e.g. AAPL).");
     tickerInput.focus();
     return;
   }
@@ -78,14 +72,13 @@ form.addEventListener("submit", async (e) => {
 
   // Show status
   statusBar.classList.remove("hidden");
+  statusBar.querySelector(".spinner").style.display = "";
   statusText.textContent = `Starting evaluation of ${ticker}...`;
 
   // Show report area
   reportArea.classList.remove("hidden");
 
   const body = { ticker };
-  const userKey = apiKeyInput.value.trim();
-  if (userKey) body.apiKey = userKey;
 
   try {
     const response = await fetch("/api/evaluate", {
@@ -95,8 +88,12 @@ form.addEventListener("submit", async (e) => {
     });
 
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error || `HTTP ${response.status}`);
+      let msg = `HTTP ${response.status}`;
+      try {
+        const err = await response.json();
+        msg = err.error || msg;
+      } catch {}
+      throw new Error(msg);
     }
 
     const reader = response.body.getReader();
@@ -106,7 +103,12 @@ form.addEventListener("submit", async (e) => {
 
     const renderMarkdown = () => {
       renderPending = false;
-      reportContent.innerHTML = marked.parse(rawMarkdown);
+      try {
+        reportContent.innerHTML = marked.parse(rawMarkdown);
+      } catch (renderErr) {
+        reportContent.textContent = rawMarkdown;
+        showError("Markdown rendering failed: " + renderErr.message);
+      }
     };
 
     const scheduleRender = () => {
@@ -122,9 +124,8 @@ form.addEventListener("submit", async (e) => {
 
       buffer += decoder.decode(value, { stream: true });
 
-      // Parse SSE events from buffer
       const lines = buffer.split("\n");
-      buffer = lines.pop(); // keep incomplete line
+      buffer = lines.pop();
 
       let eventType = null;
       for (const line of lines) {
@@ -135,9 +136,7 @@ form.addEventListener("submit", async (e) => {
           try {
             const data = JSON.parse(dataStr);
             handleEvent(eventType, data, scheduleRender);
-          } catch {
-            // ignore parse errors
-          }
+          } catch {}
           eventType = null;
         }
       }
@@ -146,7 +145,8 @@ form.addEventListener("submit", async (e) => {
     // Final render
     renderMarkdown();
   } catch (err) {
-    statusText.textContent = `Error: ${err.message}`;
+    showError("Error: " + err.message);
+    statusText.textContent = "Evaluation failed.";
     statusBar.querySelector(".spinner").style.display = "none";
   } finally {
     evaluateBtn.disabled = false;
@@ -171,7 +171,7 @@ function handleEvent(type, data, scheduleRender) {
       break;
 
     case "error":
-      statusText.textContent = `Error: ${data.message}`;
+      showError("Error: " + data.message);
       statusBar.querySelector(".spinner").style.display = "none";
       break;
   }

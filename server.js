@@ -38,6 +38,13 @@ app.post("/api/login", (req, res) => {
   res.status(401).json({ error: "Incorrect password" });
 });
 
+// Logout endpoint
+app.post("/api/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.json({ success: true });
+  });
+});
+
 // Auth guard — allow login page assets through, redirect everything else
 app.use((req, res, next) => {
   const publicPaths = ["/login.html", "/style.css"];

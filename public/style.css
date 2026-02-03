@@ -20,6 +20,27 @@ header {
   text-align: center;
   padding: 2rem 1rem 1rem;
   border-bottom: 1px solid #21262d;
+  position: relative;
+}
+
+#logout-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  background: #21262d;
+  color: #8b949e;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+#logout-btn:hover {
+  background: #da3633;
+  color: #fff;
+  border-color: #da3633;
 }
 
 header h1 {
@@ -156,6 +177,17 @@ main {
   font-size: 0.8rem;
   color: #8b949e;
   cursor: pointer;
+}
+
+/* Error Banner */
+#error-banner {
+  padding: 0.6rem 1rem;
+  background: #3d1117;
+  border: 1px solid #f85149;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #f85149;
 }
 
 /* Status Bar */

@@ -11,6 +11,7 @@
   <header>
     <h1>Stock Evaluator</h1>
     <p class="subtitle">Top-analyst consensus &amp; entry price calculator</p>
+    <button id="logout-btn" title="Log out">Logout</button>
   </header>
 
   <main>
@@ -28,24 +29,7 @@
       </div>
     </form>
 
-    <details id="api-key-section">
-      <summary>API Key Settings</summary>
-      <div class="api-key-content">
-        <p class="api-key-hint">
-          The server can use its own key. Optionally provide yours here to override.
-        </p>
-        <input
-          type="password"
-          id="api-key-input"
-          placeholder="sk-ant-..."
-          autocomplete="off"
-        >
-        <label class="checkbox-label">
-          <input type="checkbox" id="save-key-checkbox">
-          Save key in browser (localStorage)
-        </label>
-      </div>
-    </details>
+    <div id="error-banner" class="hidden"></div>
 
     <div id="status-bar" class="hidden">
       <div class="spinner"></div>
