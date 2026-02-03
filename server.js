@@ -94,10 +94,13 @@ app.post("/api/evaluate", async (req, res) => {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
+    "X-Accel-Buffering": "no",
   });
+  res.flushHeaders();
 
   const sendEvent = (event, data) => {
     res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    if (res.flush) res.flush();
   };
 
   try {
