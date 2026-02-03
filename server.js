@@ -264,19 +264,17 @@ Present the final report in this exact format:
 }
 
 app.post("/api/evaluate", async (req, res) => {
-  console.log(`Evaluate request: ticker=${req.body?.ticker}, hasApiKey=${!!req.body?.apiKey}, envKeySet=${!!process.env.ANTHROPIC_API_KEY}`);
-  const { ticker, apiKey } = req.body;
+  const { ticker } = req.body;
 
   // Validate ticker
   if (!ticker || !/^[A-Z]{1,5}$/.test(ticker)) {
     return res.status(400).json({ error: "Invalid ticker. Must be 1-5 uppercase letters." });
   }
 
-  // Pick API key: user-provided > server .env
-  const key = apiKey || process.env.ANTHROPIC_API_KEY;
+  const key = process.env.ANTHROPIC_API_KEY;
   if (!key) {
-    return res.status(400).json({
-      error: "No API key provided. Set ANTHROPIC_API_KEY in .env or enter one in the UI.",
+    return res.status(500).json({
+      error: "ANTHROPIC_API_KEY is not configured on the server.",
     });
   }
 
