@@ -334,7 +334,7 @@ app.post("/api/evaluate", async (req, res) => {
     sendEvent("status", { message: `Researching ${ticker}...` });
 
     const stream = await client.messages.stream({
-      model: "claude-opus-4-5-20251101",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 16000,
       system: buildSystemPrompt(ticker),
       tools: [
